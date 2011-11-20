@@ -32,6 +32,7 @@
 
 const char* CURRENT_VERSION = "0.9a";
 const char* PROJECT_URL = "http://code.google.com/p/uwedit";
+const char* UPDATECHECK_URL = "http://uwedit.googlecode.com/files/UpdateCheck.txt";
 
 void LoadWaveFile(const char* filename, std::vector<short>& data);
 bool SendMidiSDS(int midiport, std::vector<short>& data, unsigned int _loopStart, unsigned int _loopEnd, const char* sampleName, int samplePos, void (*progress)(float ));
@@ -135,46 +136,66 @@ class MainFrame: public wxFrame, public wxThreadHelper
 
     void OnNewVersion(wxThreadEvent& evt)
     {
-        std::string version = evt.GetPayload<std::string>();
+        std::string updateCheck = evt.GetPayload<std::string>();
 
-        wxSizer* a = this->GetStatusBar()->GetSizer();
+        size_t a = updateCheck.find('\t');
+        size_t b = updateCheck.find('\t', a+1);
+
+        std::string version = updateCheck.substr(0, a );
+        std::string text = updateCheck.substr(a+1, b-a );
+        std::string url = updateCheck.substr(b+1, updateCheck.size()-b );
+
+        wxSizer* sizer = this->GetStatusBar()->GetSizer();
 
         if(version != CURRENT_VERSION)
         {
-            wxString txt = wxString::Format(wxT("New Version %s available"), wxString(version.c_str()));
-            wxHyperlinkCtrl* hyperlink = new wxHyperlinkCtrl(this->GetStatusBar(), wxID_ANY, txt, wxT("http://code.google.com/p/uwedit/"));
+            wxHyperlinkCtrl* hyperlink = new wxHyperlinkCtrl(this->GetStatusBar(), wxID_ANY, wxString(text.c_str()), wxString(url.c_str()));
 
-            a->Add(hyperlink, 0, wxALL|wxEXPAND|wxALIGN_RIGHT, 5);
+            sizer->Add(hyperlink, 0, wxALL|wxEXPAND|wxALIGN_RIGHT, 5);
         }
 
-        a->AddSpacer(10);
+        sizer->AddSpacer(10);
     }
 
     void OnAbout(wxCommandEvent& WXUNUSED(event))
     {
-        /*
-        wxDialog dlg(this, wxID_ANY, "About");
+        wxSize size(400,200);
+        wxPoint pos = this->GetScreenRect().GetTopLeft() + this->GetScreenRect().GetSize() / 2 - size /2;
+        wxDialog dlg(this, wxID_ANY, wxString::Format(L"About UWEdit %s", CURRENT_VERSION), pos, size );
 
-        wxBoxSizer a(wxVERTICAL);
 
-        wxStaticText label(&dlg, wxID_ANY, wxT("UWEdit 0.9alpha"));
+        wxStaticBitmap image(&dlg, wxID_ANY, wxIcon(wxT("APP_ICO"))); //(wxT("MD_PNG")));
+        wxStaticText label(&dlg, wxID_ANY, wxString::Format(L"UWEdit %s", CURRENT_VERSION));
         wxStaticText label2(&dlg, wxID_ANY, wxT("Copyright (C) 2011 by E.Heidt"));
 
-        a.Add(&label, 1, wxALL|wxEXPAND, 10);
-        a.Add(&label2, 1, wxALL|wxEXPAND, 10);
-        wxHyperlinkCtrl hyperlink(&dlg, wxID_ANY, "http://code.google.com/p/uwedit", wxT("http://code.google.com/p/uwedit/"));
-        a.Add(&hyperlink, 1, wxALL|wxEXPAND, 10);
+
+        wxBoxSizer h(wxHORIZONTAL);
+        h.Add(&image, 0, wxALL, 20);
+
+
+        wxBoxSizer v(wxVERTICAL);
+        v.AddSpacer(32);
+        v.Add(&label, 1, wxALL, 0);
+        v.Add(&label2, 1, wxALL, 0);
+        v.AddStretchSpacer(1);
+        wxHyperlinkCtrl hyperlink(&dlg, wxID_ANY, wxString(PROJECT_URL), wxString(PROJECT_URL));
+        v.Add(&hyperlink, 1, wxALL, 0);
+
+        h.Add(&v, 0, wxALL, 0);
+
         wxButton btnOK(&dlg, wxID_OK, wxT("OK"));
-        a.Add(&btnOK, 1, wxALL|wxEXPAND, 10);
+        h.Add(&btnOK, 1, wxALL, 20);
 
-        dlg.SetSizer(&a);
+
+        dlg.SetSizer(&h);
+
         dlg.ShowModal();
-        */
 
-        wxString about;
-        about += wxString::Format(L"UWEdit %s\n\n", CURRENT_VERSION);
-        about += wxString::Format(L"Copyright (C) 2011 by E.Heidt\n%s\n\n", PROJECT_URL);;
-        wxMessageBox( about.c_str(), wxString::Format(L"UWEdit %s\n\n", CURRENT_VERSION) );
+
+        //wxString about;
+        //about += wxString::Format(L"UWEdit %s\n\n", CURRENT_VERSION);
+        //about += wxString::Format(L"Copyright (C) 2011 by E.Heidt\n%s\n\n", PROJECT_URL);;
+        //wxMessageBox( about.c_str(), wxString::Format(L"UWEdit %s\n\n", CURRENT_VERSION) );
     }
 
     void OnSendSysEx(wxCommandEvent& WXUNUSED(event))
@@ -446,10 +467,10 @@ public:
         protected:
             virtual ExitCode Entry()
             {
-                std::string CheckForUpdate(const char* httpUrl, const char* currentVersion);
+                std::string CheckForUpdate(const char* httpUrl);
 
                 wxThreadEvent* te = new wxThreadEvent(wxEVT_THREAD, wxEVT_NEWVERSION);
-                te->SetPayload(CheckForUpdate(PROJECT_URL, CURRENT_VERSION));
+                te->SetPayload(CheckForUpdate(UPDATECHECK_URL));
                 wxQueueEvent(MainFrame::m_pInstance, te);
 
                 return static_cast<ExitCode>(NULL);
