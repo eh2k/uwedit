@@ -15,34 +15,29 @@
 ****************************************************************************/
 
 #include <string>
-#include <wininet.h>
+#define CURL_STATICLIB
+#include <curl/curl.h>
+#include <curl/easy.h>
+
+size_t write_data(void *ptr, size_t size, size_t nmemb, std::string *out)
+{
+    for(size_t i = 0; i < size*nmemb; i++)
+        *out += *(((char*)ptr)+i);
+
+    return size*nmemb;
+}
 
 std::string CheckForUpdate(const char* httpUrl)
 {
     std::string ret;
 
-    if ( HINTERNET hINet = InternetOpen("InetURL/1.0", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 ) )
+    if (CURL *curl = curl_easy_init())
     {
-        std::string url = httpUrl;
-
-        if ( HINTERNET hFile = InternetOpenUrl( hINet, url.c_str(),
-                                                NULL, 0, INTERNET_FLAG_PRAGMA_NOCACHE|INTERNET_FLAG_RELOAD, 0 ) )
-        {
-            char buffer[1024];
-            DWORD dwRead;
-            while ( InternetReadFile( hFile, buffer, 1023, &dwRead ) )
-            {
-                if ( dwRead == 0 )
-                    break;
-
-                buffer[dwRead] = 0;
-
-                ret += buffer;
-            }
-
-            InternetCloseHandle( hFile );
-        }
-        InternetCloseHandle( hINet );
+        curl_easy_setopt(curl, CURLOPT_URL, httpUrl);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ret);
+        curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
     }
 
     return ret;

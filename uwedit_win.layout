@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="src\MidiSDS.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="6961" topLine="167" />
+	</File>
+	<File name="src\MidiSend.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="1227" topLine="3" />
+	</File>
+	<File name="src\Player.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="1321" topLine="74" />
+	</File>
+	<File name="src\Player.h" open="0" top="0" tabpos="2">
+		<Cursor position="231" topLine="0" />
+	</File>
+	<File name="src\Synthesizer.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="320" topLine="0" />
+	</File>
+	<File name="src\UWEditApp.cpp" open="1" top="1" tabpos="0">
+		<Cursor position="16954" topLine="449" />
+	</File>
+	<File name="src\Wav.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="1301" topLine="0" />
+	</File>
+	<File name="src\WavePanel.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="3928" topLine="95" />
+	</File>
+	<File name="src\WebUpdate.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="1435" topLine="10" />
+	</File>
+	<File name="src\resource.rc" open="0" top="0" tabpos="2">
+		<Cursor position="152" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

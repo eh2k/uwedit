@@ -3,6 +3,7 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="UWEdit" />
+		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -28,6 +29,7 @@
 					<Add library="libwxmsw29ud_ribbon.a" />
 					<Add library="libwxmsw29ud_html.a" />
 					<Add library="libwxmsw29ud_adv.a" />
+					<Add library="libwxbase29ud_net.a" />
 					<Add directory="D:\dev\libs\wxWidgets-2.9.2\lib\gcc_lib" />
 				</Linker>
 			</Target>
@@ -53,6 +55,7 @@
 					<Add library="libwxmsw29u_ribbon.a" />
 					<Add library="libwxmsw29u_html.a" />
 					<Add library="libwxmsw29u_adv.a" />
+					<Add library="libwxbase29u_net.a" />
 					<Add directory="D:\dev\libs\wxWidgets-2.9.2\lib\gcc_lib" />
 				</Linker>
 			</Target>
@@ -65,17 +68,18 @@
 			<Add option="-D__GNUWIN32__" />
 			<Add option="-D__WXMSW__" />
 			<Add option="-DwxUSE_UNICODE" />
-			<Add directory="D:\dev\libs\wxWidgets-2.9.2\include" />
-			<Add directory="D:\dev\libs\wxWidgets-2.9.2\contrib\include" />
-			<Add directory="..\libs\libsndfile\include" />
-			<Add directory="..\libs\portaudio\include" />
-			<Add directory="..\libs\curl-7.22.0-devel-mingw32\include" />
+			<Add option="-D__WINDOWS_MM__" />
+			<Add directory="..\libs\wxWidgets-2.9.2\include" />
+			<Add directory="..\libs\wxWidgets-2.9.2\contrib\include" />
+			<Add directory="..\libs\stk-4.4.3\include" />
+			<Add directory="..\libs\curl-7.23.1\include" />
 		</Compiler>
 		<ResourceCompiler>
 			<Add directory="D:\dev\libs\wxWidgets-2.9.2\include" />
 		</ResourceCompiler>
 		<Linker>
 			<Add option="-mthreads" />
+			<Add option="-static-libgcc" />
 			<Add library="libkernel32.a" />
 			<Add library="libuser32.a" />
 			<Add library="libgdi32.a" />
@@ -83,21 +87,24 @@
 			<Add library="libcomdlg32.a" />
 			<Add library="libadvapi32.a" />
 			<Add library="libshell32.a" />
-			<Add library="libole32.a" />
 			<Add library="liboleaut32.a" />
 			<Add library="libuuid.a" />
 			<Add library="libcomctl32.a" />
-			<Add library="libwsock32.a" />
 			<Add library="libodbc32.a" />
-			<Add library="..\libs\portaudio\lib\.libs\libportaudio.dll.a" />
-			<Add library="..\libs\libsndfile\lib\libsndfile-1.lib" />
+			<Add library="..\libs\stk-4.4.3\lib\stk-4.4.3.a" />
 			<Add library="libwinmm.a" />
+			<Add library="libdsound.a" />
+			<Add library="libole32.a" />
+			<Add library="..\libs\curl-7.23.1\lib\.libs\libcurl.a" />
+			<Add library="libwsock32.a" />
 			<Add library="libwininet.a" />
+			<Add library="libwldap32.a" />
 		</Linker>
 		<Unit filename="src\MidiSDS.cpp" />
 		<Unit filename="src\MidiSend.cpp" />
 		<Unit filename="src\Player.cpp" />
 		<Unit filename="src\Player.h" />
+		<Unit filename="src\Synthesizer.cpp" />
 		<Unit filename="src\UWEditApp.cpp" />
 		<Unit filename="src\Wav.cpp" />
 		<Unit filename="src\WavePanel.cpp" />
@@ -109,6 +116,11 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<wxsmith version="1">
+				<resources>
+					<wxDialog wxs="wxsmith/NewDialog.wxs" src="AboutDialog.cpp" hdr="AboutDialog.h" name="NewDialog" language="CPP" />
+				</resources>
+			</wxsmith>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="uwedit_osx" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/uwedit_osx" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<ExtraCommands>
+					<Add after="/Developer/Tools/Rez -d __DARWIN__ -t APPL Carbon.r -o $(TARGET_OUTPUT_FILE)" />
+				</ExtraCommands>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/uwedit_osx" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="/Developer/Tools/Rez -d __DARWIN__ -t APPL Carbon.r -o $(TARGET_OUTPUT_FILE)" />
+					<Add after="cp $(TARGET_OUTPUT_FILE) bin/UWEdit.app/Contents/MacOS/uwedit_osx" />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`../libs/wxWidgets-2.9.2/build-release/wx-config --cflags`" />
+			<Add directory="../libs/stk-4.4.3/include" />
+		</Compiler>
+		<Linker>
+			<Add option="`../libs/wxWidgets-2.9.2/build-release/wx-config --libs`" />
+			<Add option="-framework CoreMidi" />
+			<Add option="-framework CoreAudio" />
+			<Add option="-framework CoreFoundation" />
+			<Add library="../libs/wxWidgets-2.9.2/build-release/lib/libwx_osx_carbonu_ribbon-2.9.a" />
+			<Add library="../libs/stk-4.4.3/lib/libstk.a" />
+		</Linker>
+		<Unit filename="src/MidiSDS.cpp" />
+		<Unit filename="src/MidiSend.cpp" />
+		<Unit filename="src/Player.cpp" />
+		<Unit filename="src/Player.h" />
+		<Unit filename="src/Synthesizer.cpp" />
+		<Unit filename="src/UWEditApp.cpp" />
+		<Unit filename="src/Wav.cpp" />
+		<Unit filename="src/WavePanel.cpp" />
+		<Unit filename="src/WavePanel.h" />
+		<Unit filename="src/WebUpdate.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

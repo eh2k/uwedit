@@ -3263,48 +3263,49 @@
 	<vector>
 	"MidiSDS.h"
 
-1321132389 source:d:\dev\uwedit\src\midisend.cpp
+1322310668 source:d:\dev\uwedit\src\midisend.cpp
 	<vector>
 	<string>
-	<windows.h>
-	<mmsystem.h>
+	<RtMidi.h>
 
 1320530463 d:\dev\uwedit\src\midisds.h
 	<vector>
 
-1321131634 source:d:\dev\uwedit\src\uweditapp.cpp
+1322691466 source:d:\dev\uwedit\src\uweditapp.cpp
 	<wx/wx.h>
 	<wx/sysopt.h>
 	<wx/dnd.h>
 	<wx/mstream.h>
 	<wx/file.h>
-	"wx/html/htmlwin.h"
-	"wx/ribbon/bar.h"
-	"wx/ribbon/buttonbar.h"
-	"wx/ribbon/gallery.h"
-	"wx/ribbon/toolbar.h"
+	<wx/html/htmlwin.h>
+	<wx/hyperlink.h>
+	<wx/ribbon/bar.h>
+	<wx/ribbon/buttonbar.h>
+	<wx/ribbon/gallery.h>
+	<wx/ribbon/toolbar.h>
 	<vector>
-	"Player.h"
 	"WavePanel.h"
+	"CoreFoundation/CoreFoundation.h"
+	"resource.h"
 
-1320876834 source:d:\dev\uwedit\src\wav.cpp
+1322590735 source:d:\dev\uwedit\src\wav.cpp
 	<vector>
-	<sndfile.h>
+	<FileRead.h>
 
-1320702381 source:d:\dev\uwedit\src\resource.rc
+1321724181 source:d:\dev\uwedit\src\resource.rc
 	"wx/msw/wx.rc"
 
-1321132389 source:d:\dev\uwedit\src\midisds.cpp
+1321704254 source:d:\dev\uwedit\src\midisds.cpp
 	<stdio.h>
 	<string>
 	<vector>
 
-1321131253 source:d:\dev\uwedit\src\player.cpp
-	<portaudio.h>
+1322589821 source:d:\dev\uwedit\src\player.cpp
 	<stdio.h>
 	"Player.h"
+	<RtAudio.h>
 
-1320870359 d:\dev\uwedit\src\player.h
+1321202123 d:\dev\uwedit\src\player.h
 	<vector>
 
 1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\html\htmlwin.h
@@ -3430,10 +3431,10 @@
 	"wx/defs.h"
 	"wx/filesys.h"
 
-1321129488 source:d:\dev\uwedit\src\webupdate.cpp
-	<wx/wx.h>
+1322930037 source:d:\dev\uwedit\src\webupdate.cpp
 	<string>
-	<wininet.h>
+	<curl/curl.h>
+	<curl/easy.h>
 
 1314393626 d:\dev\libs\curl-7.22.0-devel-mingw32\include\curl\curl.h
 	"curlver.h"
@@ -3508,18 +3509,18 @@
 
 1304925726 d:\dev\libs\curl-7.22.0\include\curl\typecheck-gcc.h
 
-1321131077 d:\dev\uwedit\src\wavepanel.h
+1321477824 d:\dev\uwedit\src\wavepanel.h
 	<wx/wx.h>
 	<vector>
+	"Player.h"
 
-1321131077 source:d:\dev\uwedit\src\wavepanel.cpp
+1321704791 source:d:\dev\uwedit\src\wavepanel.cpp
 	"WavePanel.h"
 
-1321137279 source:d:\dev\uwedit_svn\src\midisend.cpp
+1322295493 source:d:\dev\uwedit_svn\src\midisend.cpp
 	<vector>
 	<string>
-	<windows.h>
-	<mmsystem.h>
+	"RtMidi.h"
 
 1321725245 source:d:\dev\uwedit_svn\src\player.cpp
 	<wx/wx.h>
@@ -3531,7 +3532,7 @@
 1321202123 d:\dev\uwedit_svn\src\player.h
 	<vector>
 
-1321724459 source:d:\dev\uwedit_svn\src\uweditapp.cpp
+1322082451 source:d:\dev\uwedit_svn\src\uweditapp.cpp
 	<wx/wx.h>
 	<wx/sysopt.h>
 	<wx/dnd.h>
@@ -3558,7 +3559,7 @@
 1321704791 source:d:\dev\uwedit_svn\src\wavepanel.cpp
 	"WavePanel.h"
 
-1321720811 source:d:\dev\uwedit_svn\src\webupdate.cpp
+1321790520 source:d:\dev\uwedit_svn\src\webupdate.cpp
 	<string>
 	<wininet.h>
 
@@ -3606,4 +3607,259 @@
 	"nyx.h"
 
 1163563932 d:\dev\uwedit_svn\src\nyquist\nyx.h
+
+1321789103 source:d:\dev\uwedit_svn\aboutdialog.cpp
+	"AboutDialog.h"
+	<wx/bitmap.h>
+	<wx/intl.h>
+	<wx/image.h>
+	<wx/string.h>
+
+1321789084 d:\dev\uwedit_svn\aboutdialog.h
+	<wx/statbmp.h>
+	<wx/dialog.h>
+
+1314727546 source:d:\dev\uwedit_svn\src\rtmidi.cpp
+	"RtMidi.h"
+	<sstream>
+	<CoreMIDI/CoreMIDI.h>
+	<CoreAudio/HostTime.h>
+	<CoreServices/CoreServices.h>
+	<pthread.h>
+	<sys/time.h>
+	<alsa/asoundlib.h>
+	<pthread.h>
+	<sys/time.h>
+	<unistd.h>
+	<dmedia/midi.h>
+	<windows.h>
+	<mmsystem.h>
+	<jack/jack.h>
+	<jack/midiport.h>
+	<jack/ringbuffer.h>
+
+1314727546 d:\dev\uwedit_svn\src\rtmidi.h
+	"RtError.h"
+	<string>
+	<vector>
+
+1314727546 d:\dev\uwedit_svn\src\rterror.h
+	<exception>
+	<iostream>
+	<string>
+
+1314727546 d:\dev\uwedit\src\rtmidi.h
+	"RtError.h"
+	<string>
+	<vector>
+
+1314727546 d:\dev\uwedit\src\rterror.h
+	<exception>
+	<iostream>
+	<string>
+
+1314727546 source:d:\dev\uwedit\src\rtmidi.cpp
+	"RtMidi.h"
+	<sstream>
+	<CoreMIDI/CoreMIDI.h>
+	<CoreAudio/HostTime.h>
+	<CoreServices/CoreServices.h>
+	<pthread.h>
+	<sys/time.h>
+	<alsa/asoundlib.h>
+	<pthread.h>
+	<sys/time.h>
+	<unistd.h>
+	<dmedia/midi.h>
+	<windows.h>
+	<mmsystem.h>
+	<jack/jack.h>
+	<jack/midiport.h>
+	<jack/ringbuffer.h>
+
+1314727546 d:\dev\libs\stk-4.4.3\include\rtmidi.h
+	"RtError.h"
+	<string>
+	<vector>
+
+1314727546 d:\dev\libs\stk-4.4.3\include\rterror.h
+	<exception>
+	<iostream>
+	<string>
+
+1322322237 source:d:\dev\uwedit\src\synthesizer.cpp
+	<vector>
+	"wx/wx.h"
+	<BandedWG.h>
+
+1314727546 d:\dev\libs\stk-4.4.3\include\tubebell.h
+	"FM.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\fm.h
+	"Instrmnt.h"
+	"ADSR.h"
+	"FileLoop.h"
+	"SineWave.h"
+	"TwoZero.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\instrmnt.h
+	"Stk.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\stk.h
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<cstdlib>
+
+1314727546 d:\dev\libs\stk-4.4.3\include\adsr.h
+	"Generator.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\generator.h
+	"Stk.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\fileloop.h
+	"FileWvIn.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\filewvin.h
+	"WvIn.h"
+	"FileRead.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\wvin.h
+	"Stk.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\fileread.h
+	"Stk.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\sinewave.h
+	"Generator.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\twozero.h
+	"Filter.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\filter.h
+	"Stk.h"
+	<vector>
+	<cmath>
+
+1314727546 d:\dev\libs\stk-4.4.3\include\rhodey.h
+	"FM.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\bandedwg.h
+	"Instrmnt.h"
+	"DelayL.h"
+	"BowTable.h"
+	"ADSR.h"
+	"BiQuad.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\delayl.h
+	"Delay.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\delay.h
+	"Filter.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\bowtable.h
+	"Function.h"
+	<cmath>
+
+1314727546 d:\dev\libs\stk-4.4.3\include\function.h
+	"Stk.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\biquad.h
+	"Filter.h"
+
+1314727546 d:\dev\libs\stk-4.4.3\include\rtaudio.h
+	<string>
+	<vector>
+	"RtError.h"
+	<windows.h>
+	<process.h>
+	<pthread.h>
+	<sys/time.h>
+	<sstream>
+	<CoreAudio/AudioHardware.h>
+
+1322684890 d:\dev\uwedit\src\resource.h
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\url.h
+	"wx/defs.h"
+	"wx/uri.h"
+	"wx/protocol/protocol.h"
+	"wx/protocol/http.h"
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\uri.h
+	"wx/defs.h"
+	"wx/object.h"
+	"wx/string.h"
+	"wx/arrstr.h"
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\protocol\protocol.h
+	"wx/defs.h"
+	"wx/object.h"
+	"wx/string.h"
+	"wx/stream.h"
+	"wx/socket.h"
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\socket.h
+	"wx/defs.h"
+	"wx/event.h"
+	"wx/sckaddr.h"
+	"wx/list.h"
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\sckaddr.h
+	"wx/defs.h"
+	"wx/string.h"
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\protocol\http.h
+	"wx/defs.h"
+	"wx/hashmap.h"
+	"wx/protocol/protocol.h"
+
+1309815158 d:\dev\libs\wxwidgets-2.9.2\include\wx\sstream.h
+	"wx/stream.h"
+
+1320445976 d:\dev\libs\curl-7.23.1\include\curl\curl.h
+	"curlver.h"
+	"curlbuild.h"
+	"curlrules.h"
+	<stdio.h>
+	<limits.h>
+	<osreldate.h>
+	<sys/types.h>
+	<time.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<sys/select.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<support/SupportDefs.h>
+	"easy.h"
+	"multi.h"
+	"typecheck-gcc.h"
+
+1321550326 d:\dev\libs\curl-7.23.1\include\curl\curlver.h
+
+1322928455 d:\dev\libs\curl-7.23.1\include\curl\curlbuild.h
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<sys/types.h>
+	<stdint.h>
+	<inttypes.h>
+	<sys/socket.h>
+
+1300547834 d:\dev\libs\curl-7.23.1\include\curl\curlrules.h
+
+1320445976 d:\dev\libs\curl-7.23.1\include\curl\easy.h
+
+1300547768 d:\dev\libs\curl-7.23.1\include\curl\multi.h
+	"curl.h"
+
+1320445976 d:\dev\libs\curl-7.23.1\include\curl\typecheck-gcc.h
+
+1322927784 source:d:\dev\uwedit\src\webupdate.c
+	<string>
+	<curl/curl.h>
+	<curl/easy.h>
+	<wininet.h>
 

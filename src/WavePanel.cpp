@@ -202,7 +202,7 @@ void WavePanel::OnMouseEvent(wxMouseEvent& event)
     m_pos /= m_zoom;
 
     m_pos = std::max(0u, m_pos);
-    m_pos = std::min(m_wave.size()-1,m_pos);
+    m_pos = std::min(m_wave.size()-1,(size_t)m_pos);
 
     if(event.LeftIsDown())
     {
@@ -222,7 +222,7 @@ void WavePanel::OnMouseEvent(wxMouseEvent& event)
 void WavePanel::SetLoop(unsigned int pos, bool start)
 {
     pos = std::max(pos, 0u);
-    pos = std::min(pos, m_wave.size());
+    pos = std::min((size_t)pos, m_wave.size());
 
     if(start)
     {
