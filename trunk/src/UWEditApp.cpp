@@ -22,16 +22,21 @@
 #include <wx/html/htmlwin.h>
 #include <wx/hyperlink.h>
 
-#include "wx/ribbon/bar.h"
-#include "wx/ribbon/buttonbar.h"
-#include "wx/ribbon/gallery.h"
-#include "wx/ribbon/toolbar.h"
+#include <wx/ribbon/bar.h>
+#include <wx/ribbon/buttonbar.h>
+#include <wx/ribbon/gallery.h>
+#include <wx/ribbon/toolbar.h>
 
 #include <vector>
 #include "WavePanel.h"
 
+#ifdef __APPLE__
+#include "CoreFoundation/CoreFoundation.h"
+#endif
+
+
 const char* CURRENT_VERSION = "0.9a";
-const char* PROJECT_URL = "http://code.google.com/p/uwedit";
+const char* PROJECT_URL = "http://uwedit.googlecode.com";
 const char* UPDATECHECK_URL = "http://uwedit.googlecode.com/files/UpdateCheck.txt";
 
 void LoadWaveFile(const char* filename, std::vector<short>& data);
@@ -53,7 +58,7 @@ enum wxID
     wxEVT_NEWVERSION,
 };
 
-
+#if defined(__WXMSW__)
 bool LoadDataFromResource(char*& t_data, DWORD& t_dataSize, const wxString& t_name)
 {
     bool     r_result    = false;
@@ -83,7 +88,7 @@ wxBitmap* GetBitmapFromMemory(const char* t_data, const DWORD t_size)
     return new wxBitmap(wxImage(a_is, wxBITMAP_TYPE_PNG, -1), -1);
 }
 
-wxBitmap& wxPng(const wxString& t_name)
+wxBitmap& LoadPngFromResources(const wxString& t_name)
 {
     static wxBitmap*   r_bitmapPtr = 0;
 
@@ -100,6 +105,15 @@ wxBitmap& wxPng(const wxString& t_name)
 
     return *r_bitmapPtr;
 }
+
+#define wxPng(name) LoadPngFromResources(wxT(#name))
+
+#else
+
+#include "resource.h"
+#define wxPng(name) wxBitmap(wxImage(name))
+
+#endif
 
 class MainFrame: public wxFrame, public wxThreadHelper
 {
@@ -138,20 +152,28 @@ class MainFrame: public wxFrame, public wxThreadHelper
     {
         std::string updateCheck = evt.GetPayload<std::string>();
 
+        wxSizer* sizer = this->GetStatusBar()->GetSizer();
+
         size_t a = updateCheck.find('\t');
         size_t b = updateCheck.find('\t', a+1);
 
-        std::string version = updateCheck.substr(0, a );
-        std::string text = updateCheck.substr(a+1, b-a );
-        std::string url = updateCheck.substr(b+1, updateCheck.size()-b );
-
-        wxSizer* sizer = this->GetStatusBar()->GetSizer();
-
-        if(version != CURRENT_VERSION)
+        if(a < b)
         {
-            wxHyperlinkCtrl* hyperlink = new wxHyperlinkCtrl(this->GetStatusBar(), wxID_ANY, wxString(text.c_str()), wxString(url.c_str()));
+            std::string version = updateCheck.substr(0, a );
+            std::string text = updateCheck.substr(a+1, b-a );
+            std::string url = updateCheck.substr(b+1, updateCheck.size()-b );
 
-            sizer->Add(hyperlink, 0, wxALL|wxEXPAND|wxALIGN_RIGHT, 5);
+
+            if(version != CURRENT_VERSION)
+            {
+                wxHyperlinkCtrl* hyperlink = new wxHyperlinkCtrl(this->GetStatusBar(), wxID_ANY, wxString(text.c_str()), wxString(url.c_str()));
+
+#ifdef __WXMSW__
+                sizer->Add(hyperlink, 0, wxALL|wxEXPAND|wxALIGN_RIGHT, 5);
+#else
+                sizer->Add(hyperlink, 0, wxALL|wxEXPAND|wxALIGN_RIGHT, 0);
+#endif
+            }
         }
 
         sizer->AddSpacer(10);
@@ -164,7 +186,12 @@ class MainFrame: public wxFrame, public wxThreadHelper
         wxDialog dlg(this, wxID_ANY, wxString::Format(L"About UWEdit %s", CURRENT_VERSION), pos, size );
 
 
-        wxStaticBitmap image(&dlg, wxID_ANY, wxIcon(wxT("APP_ICO"))); //(wxT("MD_PNG")));
+#ifdef __WXMSW__
+        wxStaticBitmap image(&dlg, wxID_ANY, this->GetIcon());
+#else
+        wxStaticBitmap image(&dlg, wxID_ANY, wxPng(APP_ICO));
+#endif
+
         wxStaticText label(&dlg, wxID_ANY, wxString::Format(L"UWEdit %s", CURRENT_VERSION));
         wxStaticText label2(&dlg, wxID_ANY, wxT("Copyright (C) 2011 by E.Heidt"));
 
@@ -296,10 +323,17 @@ class MainFrame: public wxFrame, public wxThreadHelper
 public:
 
     MainFrame():
-        wxFrame(NULL, wxID_ANY, wxT("UWEdit"), wxDefaultPosition, wxSize(640, 480)), m_wavePanel(new WavePanel(this)),m_pTextCtrl(NULL),m_cbSampleNum(NULL)
+        wxFrame(NULL, wxID_ANY, wxT("UWEdit"), wxDefaultPosition, wxSize(640, 480)),
+        m_wavePanel(NULL),
+        m_pTextCtrl(NULL),
+        m_cbSampleNum(NULL)
     {
 
         m_pInstance = this;
+
+        m_wavePanel = new WavePanel(this);
+
+        printf("hello");
 
         this->SetIcon( wxIcon(wxT("APP_ICO")) );
 
@@ -336,15 +370,15 @@ public:
             //toolbar->AddButton(wxID_SAVE, wxT("Save"), wxPng(wxT("FILE_SAVE")));
 
             wxRibbonToolBar *toolbar = new wxRibbonToolBar(rpanel, wxID_ANY);
-            toolbar->AddTool(wxID_OPEN, wxPng(wxT("FILE_OPEN")));
-            toolbar->AddTool(wxID_SAVE, wxPng(wxT("FILE_SAVE")));
+            toolbar->AddTool(wxID_OPEN, wxPng(FILE_OPEN));
+            toolbar->AddTool(wxID_SAVE, wxPng(FILE_SAVE));
         }
 
         if(wxRibbonPanel *rpanel = new wxRibbonPanel(m_ribbonHome, wxID_ANY, wxT("Play"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE))
         {
             m_playToolbar = new wxRibbonToolBar(rpanel, wxID_ANY);
-            m_playToolbar->AddTool(wxID_PLAYSTART, wxPng(wxT("PLAY_PNG")));
-            m_playToolbar->AddTool(wxID_PLAYSTOP, wxPng(wxT("STOP_PNG")));
+            m_playToolbar->AddTool(wxID_PLAYSTART, wxPng(PLAY_PNG));
+            m_playToolbar->AddTool(wxID_PLAYSTOP, wxPng(STOP_PNG));
         }
 
         if(wxRibbonPanel *rpanel = new wxRibbonPanel(m_ribbonHome, wxID_ANY, wxT("Name"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE))
@@ -395,13 +429,13 @@ public:
         if(wxRibbonPanel *rpanel = new wxRibbonPanel(m_ribbonHome, wxID_ANY, wxT("Send"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE))
         {
             wxRibbonToolBar *toolbar = new wxRibbonToolBar(rpanel, wxID_ANY);
-            toolbar->AddTool(wxID_SENDSYSEX, wxPng(wxT("MD_PNG")));
+            toolbar->AddTool(wxID_SENDSYSEX, wxPng(MD_PNG));
         }
 
         if(wxRibbonPanel *rpanel = new wxRibbonPanel(m_ribbonHome, wxID_ANY, wxT("About"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE))
         {
             wxRibbonToolBar *toolbar = new wxRibbonToolBar(rpanel, wxID_ANY);
-            toolbar->AddTool(wxID_ABOUT, wxPng(wxT("INFO_PNG")));
+            toolbar->AddTool(wxID_ABOUT, wxPng(INFO_PNG));
         }
 
         ////////////
@@ -428,12 +462,20 @@ public:
 
         wxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
         sizer->AddStretchSpacer(1);
+#ifdef __WXMSW__
         sizer->Add(m_pGauge, 1, wxALL|wxEXPAND|wxALIGN_RIGHT, 5);
+#else
+        sizer->Add(m_pGauge, 1, wxALL|wxEXPAND|wxALIGN_RIGHT, 2);
+#endif
         this->GetStatusBar()->SetSizer(sizer);
 
         m_pGauge->Hide();
 
         ////////////////////////////////////////////////////////////////////////
+
+        //void Synthesize(std::vector<short>& wave);
+        //Synthesize(m_wavePanel->m_wave);
+
 
         const int n = 512;
 
@@ -469,8 +511,10 @@ public:
             {
                 std::string CheckForUpdate(const char* httpUrl);
 
+                std::string ret = CheckForUpdate(UPDATECHECK_URL);
+
                 wxThreadEvent* te = new wxThreadEvent(wxEVT_THREAD, wxEVT_NEWVERSION);
-                te->SetPayload(CheckForUpdate(UPDATECHECK_URL));
+                te->SetPayload(ret);
                 wxQueueEvent(MainFrame::m_pInstance, te);
 
                 return static_cast<ExitCode>(NULL);
@@ -569,7 +613,21 @@ public:
     {
         wxImage::AddHandler(new wxPNGHandler);
 
-        MainFrame* pFrame = new MainFrame();
+#ifdef __APPLE__
+        CFBundleRef mainBundle = CFBundleGetMainBundle();
+        CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+        char path[PATH_MAX];
+        if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
+        {
+            // error!
+        }
+        CFRelease(resourcesURL);
+
+        chdir(path);
+        std::cout << "Current Path: " << path << std::endl;
+#endif
+
+        wxFrame* pFrame = new MainFrame();
         pFrame->Show(true);
 
         return true;
