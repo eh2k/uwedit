@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <FileRead.h>
+#include <FileWrite.h>
 
 void LoadWaveFile(const char* filename, std::vector<short>& data)
 {
@@ -29,3 +30,16 @@ void LoadWaveFile(const char* filename, std::vector<short>& data)
     for(size_t i = 0; i < frames.size(); i+=f.channels())
         data.push_back( (short) (frames[i] * 0x7FFF));
 }
+
+void SaveWaveFile(const char* filename, const std::vector<short>& data)
+{
+    stk::FileWrite f(filename, 1, stk::FileWrite::FILE_WAV, stk::FileWrite::STK_SINT16);
+
+    stk::StkFrames frames(data.size(), 1);
+
+    for(size_t i = 0; i < frames.size(); i++)
+        frames[i] = ((float)data[i]) / 0x7FFF;
+
+    f.write(frames);
+}
+
