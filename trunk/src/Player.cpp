@@ -42,9 +42,13 @@ static int rtaudio_callback(
         }
 
         if(s_playpos < s_wave->size())
-            *out++ = s_wave->at(s_playpos);
+        {
+            *out++ = s_wave->at(s_playpos);     //Left
+            *out++ = s_wave->at(s_playpos);     //Right
+        }
         else
         {
+            *out++ = 0;
             *out++ = 0;
             return 1;
         }
@@ -63,7 +67,7 @@ Player::Player()
     RtAudio::StreamParameters outParam;
 
     outParam.deviceId = s_audio->getDefaultOutputDevice();
-    outParam.nChannels = 1;
+    outParam.nChannels = 2;
     unsigned int bufsize = 4096;
     s_audio->openStream(&outParam, NULL, RTAUDIO_SINT16, 44100, &bufsize, rtaudio_callback, NULL);
 
@@ -102,5 +106,8 @@ bool Player::IsPlaying()
 
 unsigned int Player::GetPlayPos()
 {
-    return s_playpos;
+    if(IsPlaying())
+        return s_playpos;
+    else
+        return 0;
 }
