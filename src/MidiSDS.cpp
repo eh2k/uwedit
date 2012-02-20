@@ -14,6 +14,10 @@
 * for more details.                                                         *
 ****************************************************************************/
 
+/*
+* Some Functions base on Code from CMIDISDSSoundTranslator.cpp (http://rezound.sourceforge.net/)
+*/
+
 #include <stdio.h>
 #include <string>
 #include <vector>
