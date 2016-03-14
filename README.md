@@ -3,10 +3,10 @@
 UWEdit is a Sample Editor for Machinedrum UW.
 Features:
 
-    Loading and saving Midi Sample Dumps
-    Setting Sustain Loop Start/End Points
-    Setting Sample Name and Sample Slot
-    Sample Upload directly to Machinedrum
+* Loading and saving Midi Sample Dumps
+* Setting Sustain Loop Start/End Points
+* Setting Sample Name and Sample Slot
+* Sample Upload directly to Machinedrum
 
 Screenshots:
 
