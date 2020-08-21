@@ -1,14 +1,24 @@
-<b>UWEdit 0.9a</b>
+<b>UWEdit 0.9b</b>
 
-UWEdit is a Sample Editor for Machinedrum UW.
+![build](https://github.com/eh2k/uwedit/workflows/build/badge.svg)
+
+Load, save and upload Midi SDS Samples to Elektron Machinedrum UW.
+
 Features:
 
 * Loading and saving Midi Sample Dumps
 * Setting Sustain Loop Start/End Points
 * Setting Sample Name and Sample Slot
 * Sample Upload directly to Machinedrum
+* Insert Silence at beginning and end
+* Invert waveform
+* Normalize
 
 Screenshots:
 
-<img src='https://github.com/eh2k/uwedit/raw/master/doc/screenshot.png' border='1' width='400'> 
-<img src='https://github.com/eh2k/uwedit/raw/master/doc/screenshot_osx.png' border='1' width='400'>
+![](doc/Screenshot_linux.png)
+<!--
+<img src='doc/Screenshot_linux.png' border='1' width='400'> 
+<img src='doc/screenshot.png' border='1' width='400'> 
+<img src='doc/screenshot_osx.png' border='1' width='400'>
+-->
