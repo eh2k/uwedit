@@ -4,7 +4,7 @@
 
 Load, save and upload Midi SDS Samples to Elektron Machinedrum UW.
 
-<img src="doc/Screenshot_linux.png" height="330"/> <a href="https://www.youtube.com/watch?v=4D9BrBJQetM"><img src="https://img.youtube.com/vi/4D9BrBJQetM/0.jpg" height="330"/></a>
+<img src="doc/Screenshot_linux.png" height="320"/> <a href="https://www.youtube.com/watch?v=4D9BrBJQetM"><img src="https://img.youtube.com/vi/4D9BrBJQetM/0.jpg" height="320"/></a>
 
 
 Features:
