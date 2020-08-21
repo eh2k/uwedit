@@ -611,7 +611,7 @@ func loop(displaySize imgui.Vec2) {
 		imgui.Text("")
 		imgui.Text("Silence Length (ms):            ")
 
-		if imgui.InputIntV("  ", &settings.Silence, 1, 10, 0) && settings.Silence < 0{
+		if imgui.InputIntV("  ", &settings.Silence, 10, 10, 0) && settings.Silence < 0{
 			settings.Silence = 0
 		}
 
@@ -717,11 +717,12 @@ func main() {
 		log.Println(err3)
 	}
 
+	settingsFile := filepath.Join(filepath.Dir(exePath), ".uwedit.json")
 	{
-		settingsJSON, err := ioutil.ReadFile("./uwedit.json")
+		settingsJSON, err := ioutil.ReadFile(settingsFile)
 		if err == nil && settingsJSON != nil {
 			err = json.Unmarshal(settingsJSON, &settings)
-			if err == nil {
+			if err != nil {
 				settings = DefaultSettings()
 			}
 		}
@@ -732,7 +733,7 @@ func main() {
 	defer func() {
 		if settings != DefaultSettings() {
 			settingsJSON, _ := json.MarshalIndent(settings, "", " ")
-			_ = ioutil.WriteFile("uwedit.json", settingsJSON, 0644)
+			_ = ioutil.WriteFile(settingsFile, settingsJSON, 0644)
 		}
 	}()
 
@@ -790,7 +791,7 @@ func main() {
 			k := 1.0
 			for ; i < f; i++ {
 
-				v := int16(math.Sin((math.Pi/f)*j*2) * 0x7FFF)
+				v := int16(math.Sin((math.Pi/f)*j*2) * 0x5FFF)
 				context.wave = append(context.wave, v)
 				j += k
 			}
