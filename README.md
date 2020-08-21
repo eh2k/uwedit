@@ -1,4 +1,4 @@
-<b>UWEdit 0.9b</b>
+<b>UWEdit</b>
 
 ![build](https://github.com/eh2k/uwedit/workflows/build/badge.svg)
 
