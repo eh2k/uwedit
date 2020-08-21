@@ -2,19 +2,19 @@
 
 ## UWedit
 
-Load, save and upload Midi SDS Samples to Elektron Machinedrum UW.
+Load, save and upload Midi-SDS samples to Elektron Machinedrum UW.
 
 [![](http://img.youtube.com/vi/4D9BrBJQetM/0.jpg)](http://www.youtube.com/watch?v=4D9BrBJQetM "")
 
 Features:
 
-* Loading and saving Midi Sample Dumps
-* Setting Sustain Loop Start/End Points
-* Setting Sample Name and Sample Slot
-* Sample Upload directly to Machinedrum
-* Insert Silence at beginning and end
-* Invert waveform
-* Normalize
+* Loading and saving Midi-SDS / WAV files
+* Setting sustain loop start and end points
+* Setting sample name and sample slot
+* Sample upload directly to Machinedrum
+* Inserting silence at beginning and end
+* Waveform inversion
+* Normalizing
 
 <!--
 Screenshots:
