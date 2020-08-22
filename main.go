@@ -31,7 +31,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-type Settings struct {
+type appSettings struct {
 	File        string
 	SilencePos  int32
 	Silence     int32
@@ -41,13 +41,13 @@ type Settings struct {
 	TurboMidi   bool
 }
 
-func DefaultSettings() Settings {
-	return Settings{Midiout: core.ElektronDevice(), Delay: 50, AudioDevice: 0, Silence: 10}
+func defaultSettings() appSettings {
+	return appSettings{Midiout: core.ElektronDevice(), Delay: 50, AudioDevice: 0, Silence: 10}
 }
 
-var settings = DefaultSettings()
+var settings = defaultSettings()
 
-type WavePanel struct {
+type wavePanel struct {
 	wave   []int16
 	start  int32
 	end    int32
@@ -59,11 +59,11 @@ type WavePanel struct {
 	name   string
 }
 
-func (m WavePanel) Len() int32 {
+func (m wavePanel) Len() int32 {
 	return int32(len(m.wave))
 }
 
-func (m WavePanel) ScreenXToWorld(x float32, screenDX float32) int32 {
+func (m wavePanel) ScreenXToWorld(x float32, screenDX float32) int32 {
 	pos := int32((float32(m.offset) / m.zoom) + ((x / screenDX) * (float32(len(m.wave)) / m.zoom)))
 
 	if pos < 0 {
@@ -76,11 +76,11 @@ func (m WavePanel) ScreenXToWorld(x float32, screenDX float32) int32 {
 	return pos
 }
 
-func (m WavePanel) WorldXToScreen(wx int32, screenDX float32) float32 {
+func (m wavePanel) WorldXToScreen(wx int32, screenDX float32) float32 {
 	return float32(((float32(wx) - (float32(m.offset) / m.zoom)) / (float32(len(m.wave)) / m.zoom)) * screenDX)
 }
 
-func (m WavePanel) Draw() {
+func (m wavePanel) Draw() {
 
 	drawList := imgui.WindowDrawList()
 	dx := imgui.WindowSize().X - 16
@@ -95,7 +95,7 @@ func (m WavePanel) Draw() {
 	pos2 := m.ScreenXToWorld(dx-1, dx)
 
 	if float32(pos2-pos) > dx {
-		for x := float32(0); x < dx; x += 1 {
+		for x := float32(0); x < dx; x++ {
 			i := m.ScreenXToWorld(x, dx)
 			i2 := m.ScreenXToWorld(x+1, dx)
 
@@ -119,7 +119,7 @@ func (m WavePanel) Draw() {
 		}
 
 	} else {
-		for i := pos; i < pos2; i += 1 {
+		for i := pos; i < pos2; i++ {
 
 			v := float32(m.wave[i])
 			v = (v / float32(math.MaxInt16) * (dy - oy) / 2 * 0.9) + (oy + dy/2)
@@ -164,7 +164,7 @@ func (m WavePanel) Draw() {
 
 }
 
-func (m *WavePanel) OnMouseWheel(z float32) {
+func (m *wavePanel) OnMouseWheel(z float32) {
 
 	if z < 0 {
 		z = 0.9
@@ -185,7 +185,7 @@ func (m *WavePanel) OnMouseWheel(z float32) {
 	}
 }
 
-func (m *WavePanel) OnMouseMove(w *glfw.Window, xx float64, yy float64) {
+func (m *wavePanel) OnMouseMove(w *glfw.Window, xx float64, yy float64) {
 
 	w.SetCursor(nil)
 
@@ -238,7 +238,7 @@ func (m *WavePanel) OnMouseMove(w *glfw.Window, xx float64, yy float64) {
 	}
 }
 
-func (m *WavePanel) SetLoop(pos int32, start bool) {
+func (m *wavePanel) SetLoop(pos int32, start bool) {
 	if pos < 0 {
 		pos = 0
 	}
@@ -269,7 +269,7 @@ func (m *WavePanel) SetLoop(pos int32, start bool) {
 	}
 }
 
-var context = WavePanel{zoom: 1.0, start: -1, end: -1, name: "SNBD", num: 48}
+var context = wavePanel{zoom: 1.0, start: -1, end: -1, name: "SNBD", num: 1}
 
 var (
 	loadProgress    float32 = 0
@@ -404,31 +404,31 @@ func loop(displaySize imgui.Vec2) {
 				//https://www.elektron.se/wp-content/uploads/2016/05/machinedrum_manual_OS1.63.pdf
 
 				fmt.Println("Turbo", settings.TurboMidi)
-				core.MidiOut_openPort(settings.Midiout)
-				defer core.MidiOut_closePort()
+				core.MidiOutOpenPort(settings.Midiout)
+				defer core.MidiOutClosePort()
 
-				core.MidiIn_openPort(settings.Midiout)
-				defer core.MidiIn_closePort()
+				core.MidiInOpenPort(settings.Midiout)
+				defer core.MidiInClosePort()
 
 				header := []byte{0xF0, 0x00, 0x20, 0x3c, 0x00, 0x00}
 				if settings.TurboMidi {
 
 					done := make(chan bool, 1)
 
-					core.MidiOut_sendMessage(append(header, []byte{0x10, 0xF7}...))
+					core.MidiOutSendMessage(append(header, []byte{0x10, 0xF7}...))
 
-					core.MidiIn_setCallback(func(time float64, bytes []byte) {
+					core.MidiInSetCallback(func(time float64, bytes []byte) {
 						fmt.Println("MidiIn:", time, hex.Dump(bytes))
 						done <- true
 					})
 
 					<-done
 
-					core.MidiOut_sendMessage(append(header, []byte{0x12, 0x0f, 0x01, 0xF7}...))
+					core.MidiOutSendMessage(append(header, []byte{0x12, 0x0f, 0x01, 0xF7}...))
 
 				} else {
 					turboOn := []byte{0xf0, 0x00, 0x20, 0x3c, 0x00, 0x00, 0x12, 0x01, 0x01, 0xf7}
-					core.MidiOut_sendMessage(turboOn)
+					core.MidiOutSendMessage(turboOn)
 				}
 			}
 
@@ -704,6 +704,9 @@ var (
 )
 
 func loadSample(filename string) {
+
+	core.StopPlay()
+
 	s := core.LoadSample(filename)
 	settings.File = filename
 	context.wave = s.Wave
@@ -740,7 +743,7 @@ func main() {
 		if err == nil && settingsJSON != nil {
 			err = json.Unmarshal(settingsJSON, &settings)
 			if err != nil {
-				settings = DefaultSettings()
+				settings = defaultSettings()
 			}
 		}
 
@@ -748,7 +751,7 @@ func main() {
 	}
 
 	defer func() {
-		if settings != DefaultSettings() {
+		if settings != defaultSettings() {
 			settingsJSON, _ := json.MarshalIndent(settings, "", " ")
 			_ = ioutil.WriteFile(settingsFile, settingsJSON, 0644)
 		}
@@ -797,10 +800,10 @@ func main() {
 			loadSample(settings.File)
 		} else {
 			n := 512.0
-			last_n := 0.0
+			lastN := 0.0
 
 			for f := 2.0; f < n; f = f * 1.5 {
-				last_n = f
+				lastN = f
 				i := 0.0
 				j := 0.0
 				k := 1.0
@@ -812,7 +815,7 @@ func main() {
 				}
 			}
 
-			context.start = context.Len() - int32(last_n)
+			context.start = context.Len() - int32(lastN)
 			context.end = context.Len() - 1
 		}
 	}

@@ -15,6 +15,7 @@ import (
 	"unsafe"
 )
 
+//Sample ...
 type Sample struct {
 	Wave      []int16
 	LoopStart int32
@@ -23,6 +24,7 @@ type Sample struct {
 	Name      string
 }
 
+//LoadSample ...
 func LoadSample(path string) Sample {
 
 	cs := C.CString(path)
@@ -43,15 +45,16 @@ func LoadSample(path string) Sample {
 		tmp.Name = string(n)
 		tmp.Num++
 		return tmp
-	} else {
-		size := C.LoadWaveFile(cs, nil, C.size_t(0))
-		r := make([]int16, size)
-		p := unsafe.Pointer(&r[0])
-		C.LoadWaveFile(cs, (*C.short)(p), C.size_t(len(r)))
-		return Sample{Wave: r, Name: strings.ToUpper(filepath.Base(path + "    ")[:4]), LoopStart: -1, LoopEnd: -1, Num: -1}
 	}
+
+	size := C.LoadWaveFile(cs, nil, C.size_t(0))
+	r := make([]int16, size)
+	p := unsafe.Pointer(&r[0])
+	C.LoadWaveFile(cs, (*C.short)(p), C.size_t(len(r)))
+	return Sample{Wave: r, Name: strings.ToUpper(filepath.Base(path + "    ")[:4]), LoopStart: -1, LoopEnd: -1, Num: -1}
 }
 
+//SaveSample ...
 func SaveSample(path string, sample Sample) {
 
 	cs := C.CString(path)
@@ -78,13 +81,14 @@ func SaveSample(path string, sample Sample) {
 }
 
 var (
-	audio_devices = []string{}
+	audioDevices = []string{}
 )
 
+//GetAudioDevices ...
 func GetAudioDevices() []string {
 
-	if len(audio_devices) > 0 {
-		return audio_devices
+	if len(audioDevices) > 0 {
+		return audioDevices
 	}
 
 	for i := 0; ; i++ {
@@ -93,33 +97,36 @@ func GetAudioDevices() []string {
 			break
 		}
 		gostr := C.GoString(r)
-		audio_devices = append(audio_devices, gostr)
+		audioDevices = append(audioDevices, gostr)
 	}
 
-	if len(midi_devices) == 0 {
-		audio_devices = append(audio_devices, "no devices found")
+	if len(midiDevices) == 0 {
+		audioDevices = append(audioDevices, "no devices found")
 	}
 
-	return audio_devices
+	return audioDevices
 }
 
-func StartPlay(deviceId int, wave []int16, play_pos *int32, loop_start *int32, loop_end *int32) {
+//StartPlay ...
+func StartPlay(deviceID int, wave []int16, playPos *int32, loopStart *int32, loopEnd *int32) {
 
 	p := unsafe.Pointer(&wave[0])
-	c := unsafe.Pointer(play_pos)
-	s := unsafe.Pointer(loop_start)
-	e := unsafe.Pointer(loop_end)
-	C.Player_Play(C.int(deviceId), (*C.short)(p), C.size_t(len(wave)), (*C.int)(c), (*C.int)(s), (*C.int)(e))
+	c := unsafe.Pointer(playPos)
+	s := unsafe.Pointer(loopStart)
+	e := unsafe.Pointer(loopEnd)
+	C.Player_Play(C.int(deviceID), (*C.short)(p), C.size_t(len(wave)), (*C.int)(c), (*C.int)(s), (*C.int)(e))
 }
 
+//StopPlay ...
 func StopPlay() {
 	C.Player_Stop()
 }
 
 var (
-	midi_devices = []string{}
+	midiDevices = []string{}
 )
 
+//ElektronDevice ...
 func ElektronDevice() int {
 
 	for i, e := range GetMidiDevices() {
@@ -131,10 +138,11 @@ func ElektronDevice() int {
 	return 0
 }
 
+//GetMidiDevices ...
 func GetMidiDevices() []string {
 
-	if len(midi_devices) > 0 {
-		return midi_devices
+	if len(midiDevices) > 0 {
+		return midiDevices
 	}
 
 	for i := 0; ; i++ {
@@ -147,14 +155,14 @@ func GetMidiDevices() []string {
 		if len(tmp) > 1 && strings.Contains(tmp[1], tmp[0]) {
 			gostr = tmp[0] //strings.Join(tmp[1:], ":")
 		}
-		midi_devices = append(midi_devices, gostr)
+		midiDevices = append(midiDevices, gostr)
 	}
 
-	if len(midi_devices) == 0 {
-		midi_devices = append(midi_devices, "no devices found")
+	if len(midiDevices) == 0 {
+		midiDevices = append(midiDevices, "no devices found")
 	}
 
-	return midi_devices
+	return midiDevices
 }
 
 var progressCB func(p float32) = func(p float32) {
@@ -166,11 +174,12 @@ func goProgressCB(p float32) {
 	progressCB(p)
 }
 
+//SendToMachineDrum ...
 func SendToMachineDrum(midiport int, deley int32, sample Sample, progress func(float32)) {
 
 	progressCB = progress
 
-	MidiOut_openPort(midiport)
+	MidiOutOpenPort(midiport)
 
 	cs := C.CString(sample.Name)
 	defer C.free(unsafe.Pointer(cs))
@@ -181,29 +190,34 @@ func SendToMachineDrum(midiport int, deley int32, sample Sample, progress func(f
 		cs,
 		C.int(sample.Num-1))
 
-	MidiOut_closePort()
+	MidiOutClosePort()
 }
 
-func MidiOut_openPort(midiport int) {
+//MidiOutOpenPort ...
+func MidiOutOpenPort(midiport int) {
 	C.MidiOut_openPort(C.int(midiport))
 }
 
-func MidiOut_closePort() {
+//MidiOutClosePort ...
+func MidiOutClosePort() {
 	C.MidiOut_closePort()
 }
 
-func MidiOut_sendMessage(data []byte) {
+//MidiOutSendMessage ...
+func MidiOutSendMessage(data []byte) {
 
 	p := unsafe.Pointer(&data[0])
 	C.MidiOut_sendMessage((*C.uchar)(p), C.size_t(len(data)))
 }
 
-func MidiIn_openPort(midiport int) {
+//MidiInOpenPort ...
+func MidiInOpenPort(midiport int) {
 	fmt.Println("MidiIn_openPort", midiport)
 	C.MidiIn_openPort(C.int(midiport))
 }
 
-func MidiIn_closePort() {
+//MidiInClosePort ...
+func MidiInClosePort() {
 	fmt.Println("MidiIn_closePort")
 	C.MidiIn_closePort()
 }
@@ -217,7 +231,8 @@ func goMidiInCallback(p float64, data unsafe.Pointer, size int) {
 	_goMidiInCallback(p, data, size)
 }
 
-func MidiIn_setCallback(cb func(time float64, data []byte)) {
+//MidiInSetCallback ...
+func MidiInSetCallback(cb func(time float64, data []byte)) {
 
 	_goMidiInCallback = func(time float64, data unsafe.Pointer, size int) {
 		bytes := C.GoBytes(data, C.int(size))
