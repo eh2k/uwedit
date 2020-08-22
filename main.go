@@ -32,6 +32,7 @@ func init() {
 }
 
 type Settings struct {
+	File        string
 	SilencePos  int32
 	Silence     int32
 	Delay       int32
@@ -121,7 +122,7 @@ func (m WavePanel) Draw() {
 		for i := pos; i < pos2; i += 1 {
 
 			v := float32(m.wave[i])
-			v = (v / float32(math.MaxInt16) * (dy - oy) / 2 * 0.9) + ((dy + oy) / 2)
+			v = (v / float32(math.MaxInt16) * (dy - oy) / 2 * 0.9) + (oy + dy/2)
 
 			if i == pos {
 				last = v
@@ -477,7 +478,7 @@ func loop(displaySize imgui.Vec2) {
 
 		imgui.Text("Delay (ms):")
 
-		if imgui.InputIntV("  ", &settings.Delay, 10, 50, 0)  && settings.Delay < 0 {
+		if imgui.InputIntV("  ", &settings.Delay, 10, 50, 0) && settings.Delay < 0 {
 			settings.Delay = 0
 		}
 
@@ -522,10 +523,11 @@ func loop(displaySize imgui.Vec2) {
 			insertSilence = true
 		}
 
+		const silenceLevel = int16(100)
 		if imgui.Selectable("Remove Silence from beginning") {
 			i := 0
 			for ; i < len(context.wave); i++ {
-				if context.wave[i] > 1 || context.wave[i] < -1 {
+				if context.wave[i] > silenceLevel || context.wave[i] < -silenceLevel {
 					break
 				}
 			}
@@ -535,7 +537,7 @@ func loop(displaySize imgui.Vec2) {
 		if imgui.Selectable("Remove Silence from end") {
 			i := len(context.wave) - 1
 			for ; i > 0; i-- {
-				if context.wave[i] > 1 || context.wave[i] < -1 {
+				if context.wave[i] > silenceLevel || context.wave[i] < -silenceLevel {
 					break
 				}
 			}
@@ -558,16 +560,16 @@ func loop(displaySize imgui.Vec2) {
 
 				if context.wave[i] > 0 {
 					if max < context.wave[i] {
-						max = context.wave[i];
+						max = context.wave[i]
 					}
 				} else {
-					if max < context.wave[i] * -1 {
-						max = context.wave[i] * -1;
+					if max < context.wave[i]*-1 {
+						max = context.wave[i] * -1
 					}
 				}
 			}
 
-			f := float32(math.MaxInt16) / float32(max) 
+			f := float32(math.MaxInt16) / float32(max)
 			for i := 0; i < len(context.wave); i++ {
 				context.wave[i] = int16(float32(context.wave[i]) * f)
 			}
@@ -611,7 +613,7 @@ func loop(displaySize imgui.Vec2) {
 		imgui.Text("")
 		imgui.Text("Silence Length (ms):            ")
 
-		if imgui.InputIntV("  ", &settings.Silence, 10, 10, 0) && settings.Silence < 0{
+		if imgui.InputIntV("  ", &settings.Silence, 10, 10, 0) && settings.Silence < 0 {
 			settings.Silence = 0
 		}
 
@@ -683,13 +685,7 @@ func loop(displaySize imgui.Vec2) {
 		openFileDialog = false
 		filename, err := osdialog.ShowOpenFileDialog(".", context.name+".wav", "Sample Files:wav,syx;Wave file (*.wav):wav;Midi Sample Dumps (*.syx):syx")
 		if err == nil {
-			s := core.LoadSample(filename)
-			context.wave = s.Wave
-			context.name = s.Name
-			context.num = int8(s.Num)
-			context.cur = 0
-			context.start = s.LoopStart
-			context.end = s.LoopEnd
+			loadSample(filename)
 		}
 	}
 
@@ -701,6 +697,27 @@ func loop(displaySize imgui.Vec2) {
 				core.Sample{Wave: context.wave, Name: context.name, Num: int32(context.num), LoopStart: context.start, LoopEnd: context.end})
 		}
 	}
+}
+
+var (
+	setWindowTitle = func(title string) {}
+)
+
+func loadSample(filename string) {
+	s := core.LoadSample(filename)
+	settings.File = filename
+	context.wave = s.Wave
+	context.name = s.Name
+
+	if s.Num > 0 {
+		context.num = int8(s.Num)
+	}
+
+	context.cur = 0
+	context.start = s.LoopStart
+	context.end = s.LoopEnd
+
+	setWindowTitle("UWedit - " + filename)
 }
 
 func main() {
@@ -744,6 +761,14 @@ func main() {
 	// core.MidiIn_openPort(settings.Midiout)
 	// defer core.MidiIn_closePort()
 
+	window := app.NewAppWindow(640, 400)
+
+	setWindowTitle = func(title string) {
+		window.SetTitle(title)
+	}
+
+	defer app.Dispose()
+
 	stat, err := os.Stdin.Stat()
 	if len(os.Args) > 1 && err == nil && (stat.Mode()&os.ModeCharDevice == 0) {
 		data, _ := ioutil.ReadAll(os.Stdin)
@@ -761,48 +786,36 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		s := core.LoadSample(tmpFile)
-		context.wave = s.Wave
-		context.name = s.Name
-		context.num = int8(s.Num)
-		context.cur = 0
-		context.start = s.LoopStart
-		context.end = s.LoopEnd
-
+		loadSample(tmpFile)
 		os.Remove(tmpFile)
 
 	} else if len(os.Args) > 1 {
-		s := core.LoadSample(os.Args[1])
-		context.wave = s.Wave
-		context.name = s.Name
-		context.num = int8(s.Num)
-		context.cur = 0
-		context.start = s.LoopStart
-		context.end = s.LoopEnd
+		loadSample(os.Args[1])
 	} else {
+		fmt.Println("asdf")
+		if _, err := os.Stat(settings.File); !os.IsNotExist(err) {
+			loadSample(settings.File)
+		} else {
+			n := 512.0
+			last_n := 0.0
 
-		n := 512.0
-		last_n := 0.0
+			for f := 2.0; f < n; f = f * 1.5 {
+				last_n = f
+				i := 0.0
+				j := 0.0
+				k := 1.0
+				for ; i < f; i++ {
 
-		for f := 2.0; f < n; f = f * 1.5 {
-			last_n = f
-			i := 0.0
-			j := 0.0
-			k := 1.0
-			for ; i < f; i++ {
-
-				v := int16(math.Sin((math.Pi/f)*j*2) * 0x5FFF)
-				context.wave = append(context.wave, v)
-				j += k
+					v := int16(math.Sin((math.Pi/f)*j*2) * 0x5FFF)
+					context.wave = append(context.wave, v)
+					j += k
+				}
 			}
+
+			context.start = context.Len() - int32(last_n)
+			context.end = context.Len() - 1
 		}
-
-		context.start = context.Len() - int32(last_n)
-		context.end = context.Len() - 1
 	}
-
-	window := app.NewAppWindow(640, 400)
-	defer app.Dispose()
 
 	{
 		io := imgui.CurrentIO()
@@ -852,6 +865,36 @@ func main() {
 			}
 			if action == glfw.Release {
 				io.KeyRelease(int(key))
+			}
+
+			if action == glfw.Press && !io.WantCaptureMouse() {
+
+				if key == glfw.KeySpace {
+					context.cur = 0
+					core.StartPlay(settings.AudioDevice, context.wave, &context.cur, &context.start, &context.end)
+				} else if key == glfw.KeyLeft || key == glfw.KeyUp {
+
+					files, err := ioutil.ReadDir(filepath.Dir(settings.File))
+					if err == nil {
+						for i, f := range files {
+							if f.Name() == filepath.Base(settings.File) && i > 0 {
+								loadSample(filepath.Join(filepath.Dir(settings.File), files[i-1].Name()))
+								return
+							}
+						}
+					}
+				} else if key == glfw.KeyRight || key == glfw.KeyDown {
+
+					files, err := ioutil.ReadDir(filepath.Dir(settings.File))
+					if err == nil {
+						for i, f := range files {
+							if f.Name() == filepath.Base(settings.File) && i < len(files)-1 {
+								loadSample(filepath.Join(filepath.Dir(settings.File), files[i+1].Name()))
+								return
+							}
+						}
+					}
+				}
 			}
 
 			io.KeyCtrl(int(glfw.KeyLeftControl), int(glfw.KeyRightControl))

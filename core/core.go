@@ -48,7 +48,7 @@ func LoadSample(path string) Sample {
 		r := make([]int16, size)
 		p := unsafe.Pointer(&r[0])
 		C.LoadWaveFile(cs, (*C.short)(p), C.size_t(len(r)))
-		return Sample{Wave: r, Name: strings.ToUpper(filepath.Base(path + "    ")[:4]), LoopStart: -1, LoopEnd: -1, Num: 48}
+		return Sample{Wave: r, Name: strings.ToUpper(filepath.Base(path + "    ")[:4]), LoopStart: -1, LoopEnd: -1, Num: -1}
 	}
 }
 

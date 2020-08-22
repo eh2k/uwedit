@@ -1,4 +1,4 @@
-![build](https://github.com/eh2k/uwedit/workflows/build/badge.svg)
+![build](https://github.com/eh2k/uwedit/workflows/build/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/eh2k/uwedit)](https://goreportcard.com/report/github.com/eh2k/uwedit)
 
 ## UWedit
 
