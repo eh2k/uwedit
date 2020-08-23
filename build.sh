@@ -1,5 +1,5 @@
 set -ex
-
+env
 #export GOOS=windows GOACH=amd64 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ CGO_ENABLED=1
 
 go get -d ./...
@@ -15,6 +15,7 @@ fi
 
 make
 cd -
+ls -lah ./dep/stk/src/libstk.a
 mkdir -p ./bin
 cd ./bin/
 if [ "$CC" = "x86_64-w64-mingw32-gcc" ]; then
