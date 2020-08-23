@@ -6,9 +6,6 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: brew install
-        run: |
-          brew install mesa-utils mesa-common-dev libsdl2-dev libglfw3-dev
       - name: build
         run: |
           sh build.sh
