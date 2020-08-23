@@ -8,8 +8,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: brew install
         run: |
-          brew install -y mesa-utils mesa-common-dev libsdl2-dev libglfw3-dev
-          brew install -y libgtk-3-dev libcairo2-dev libpango1.0-dev
+          brew install mesa-utils mesa-common-dev libsdl2-dev libglfw3-dev
       - name: build
         run: |
           sh build.sh
