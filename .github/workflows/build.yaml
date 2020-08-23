@@ -35,5 +35,5 @@ jobs:
       - name: upload-artefacts
         uses: actions/upload-artifact@v2
         with:
-          name: uwedit-win
+          name: uwedit-windows
           path: ./bin/
