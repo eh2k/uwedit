@@ -24,19 +24,25 @@
 bool SaveMidiSDS(int (*write)(unsigned char *, int), void (*progress)(float), const std::vector<short> &data,
                  unsigned int _loopStart, unsigned int _loopEnd, const char *sampleName, int samplePos);
 
-static RtMidiOut midiOut;
-static RtMidiIn midiIn;
+static RtMidiOut& midiOut()
+{
+    static RtMidiOut _midiOut;
+    return _midiOut;
+} 
+static RtMidiIn& midiIn()
+{
+    static RtMidiIn _midiIn;
+    return _midiIn;
+} 
 
 extern "C"
 {
     const char *GetMidiOutDevice(int i)
     {
-        RtMidiOut midiOut;
-
-        if (i < midiOut.getPortCount())
+        if (i < midiOut().getPortCount())
         {
             static std::string tmp;
-            tmp = midiOut.getPortName(i);
+            tmp = midiOut().getPortName(i);
             return tmp.c_str();
         }
         else
@@ -45,36 +51,36 @@ extern "C"
 
     void MidiOut_openPort(int port)
     {
-        midiOut.openPort(port);
+        midiOut().openPort(port);
     }
 
     void MidiIn_openPort(int port)
     {
-        midiIn.openPort(port);
+        midiIn().openPort(port);
     }
 
     void MidiOut_closePort()
     {
-        midiOut.closePort();
+        midiOut().closePort();
     }
 
     void MidiIn_closePort()
     {
-        midiIn.closePort();
+        midiIn().closePort();
     }
 
     void MidiOut_sendMessage(const unsigned char *rawBytes, size_t len)
     {
-        midiOut.sendMessage(rawBytes, len);
+        midiOut().sendMessage(rawBytes, len);
     }
 
     void MidiIn_setCallback(/* goMidiInCallback */)
     {
         void goMidiInCallback(double timeStamp, const unsigned char *rawBytes, size_t len);
 
-        midiIn.ignoreTypes( false, true, false );
-        midiIn.cancelCallback();
-        midiIn.setCallback([](double timeStamp, std::vector<unsigned char> *message, void *userData )
+        midiIn().ignoreTypes( false, true, false );
+        midiIn().cancelCallback();
+        midiIn().setCallback([](double timeStamp, std::vector<unsigned char> *message, void *userData )
         {
             goMidiInCallback(timeStamp, &(*message)[0], message->size());
         });
@@ -92,7 +98,7 @@ extern "C"
         goProgressCB(0);
 
         SaveMidiSDS([](unsigned char *buffer, int size){
-            midiOut.sendMessage(buffer, size);
+            midiOut().sendMessage(buffer, size);
             stk::Stk::sleep(delay);
             return size;
         }, goProgressCB, data, loopStart, loopEnd, sampleName, samplePos);

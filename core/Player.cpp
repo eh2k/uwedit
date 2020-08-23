@@ -23,7 +23,11 @@ static int *s_playpos = 0;
 static const int *s_loopstart = 0;
 static const int *s_loopend = 0;
 static unsigned int s_len = 0;
-static RtAudio s_audio;
+static RtAudio& audio()
+{
+    static RtAudio s_audio;
+    return s_audio;
+};
 
 extern "C"
 {
@@ -64,10 +68,10 @@ extern "C"
 
     const char *GetAudioDevice(int i)
     {
-        if (i < s_audio.getDeviceCount())
+        if (i < audio().getDeviceCount())
         {
             static std::string tmp;
-            tmp = s_audio.getDeviceInfo(i).name;
+            tmp = audio().getDeviceInfo(i).name;
             return tmp.c_str();
         }
         else
@@ -76,31 +80,31 @@ extern "C"
 
     void Player_Stop()
     {
-        if (s_audio.isStreamRunning())
+        if (audio().isStreamRunning())
         {
-            s_audio.stopStream();
+            audio().stopStream();
 
             (*s_playpos) = 0;
         }
 
-        if (s_audio.isStreamOpen())
-            s_audio.closeStream();
+        if (audio().isStreamOpen())
+            audio().closeStream();
     }
 
     void Player_Play(int deviceId, const short *wave, const unsigned int len, int *playpos, const int *loopstart, const int *loopend)
     {
-        if (s_audio.isStreamOpen() == false)
+        if (audio().isStreamOpen() == false)
         {
             RtAudio::StreamParameters outParam;
 
             if (deviceId < 0)
             {
-                outParam.deviceId = s_audio.getDefaultOutputDevice();
+                outParam.deviceId = audio().getDefaultOutputDevice();
 
-                for (unsigned int i = 0; i < s_audio.getDeviceCount(); i++)
+                for (unsigned int i = 0; i < audio().getDeviceCount(); i++)
                 {
                     static std::string tmp;
-                    if (s_audio.getDeviceInfo(i).isDefaultOutput || s_audio.getDeviceInfo(i).name == "default")
+                    if (audio().getDeviceInfo(i).isDefaultOutput || audio().getDeviceInfo(i).name == "default")
                     {
                         outParam.deviceId = i;
                         break;
@@ -114,7 +118,7 @@ extern "C"
 
             outParam.nChannels = 2;
             unsigned int bufsize = 256;
-            s_audio.openStream(&outParam, NULL, RTAUDIO_SINT16, 44100, &bufsize, rtaudio_callback, NULL);
+            audio().openStream(&outParam, NULL, RTAUDIO_SINT16, 44100, &bufsize, rtaudio_callback, NULL);
         }
 
         s_wave = wave;
@@ -123,10 +127,10 @@ extern "C"
         s_loopstart = loopstart;
         s_loopend = loopend;
 
-        if (s_audio.isStreamRunning())
-            s_audio.stopStream();
+        if (audio().isStreamRunning())
+            audio().stopStream();
 
-        s_audio.startStream();
+        audio().startStream();
         //Pa_Sleep(1000);
     }
 }

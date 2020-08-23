@@ -4,6 +4,7 @@ package core
 // #cgo CXXFLAGS: -std=c++17 -I../dep/stk/include
 // #cgo windows LDFLAGS: -static -static-libgcc -static-libstdc++ -L../dep/stk/src/ -lstk -lole32 -ldsound -lwinmm
 // #cgo linux LDFLAGS: -ldl -lstdc++ -L../dep/stk/src/ -lstk -lasound
+// #cgo darwin LDFLAGS: -lstdc++ -L../dep/stk/src/ -lstk -framework CoreMidi -framework CoreAudio -framework CoreFoundation
 // #include <stdlib.h>
 // #include <core.h>
 import "C"

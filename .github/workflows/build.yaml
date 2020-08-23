@@ -14,6 +14,7 @@ jobs:
       - name: build
         run: |
           sh build.sh
+          ./bin/uwedit --version
       - name: upload-artefacts
         uses: actions/upload-artifact@v2
         with:
@@ -36,4 +37,18 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: uwedit-windows
+          path: ./bin/
+  build-macos:
+    name: build-macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        run: |
+          sh build.sh
+          ./bin/uwedit --version
+      - name: upload-artefacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: uwedit-darvin
           path: ./bin/

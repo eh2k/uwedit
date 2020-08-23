@@ -6,6 +6,7 @@ import (
 	"fmt"
 	//"io"
 	"bufio"
+	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -14,8 +15,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"time"
-
-	"encoding/hex"
 
 	"./core"
 	"./icons"
@@ -30,6 +29,9 @@ func init() {
 	// See documentation for functions that are only allowed to be called from the main thread.
 	runtime.LockOSThread()
 }
+
+const appName = "uwedit"
+const appVersion = "0.9.10"
 
 type appSettings struct {
 	File        string
@@ -646,7 +648,7 @@ func loop(displaySize imgui.Vec2) {
 		imgui.EndPopup()
 	}
 
-	app.ShowAboutPopup(&showAboutWindow, "uwedit", "0.9.10", "Copyright (C) 2010-2020 by E.Heidt", "https://github.com/eh2k/uwedit")
+	app.ShowAboutPopup(&showAboutWindow, appName, appVersion, "Copyright (C) 2010-2020 by E.Heidt", "https://github.com/eh2k/uwedit")
 
 	if sendSample {
 		sendSample = false
@@ -707,6 +709,11 @@ func loadSample(filename string) {
 
 	core.StopPlay()
 
+	if _, err := os.Stat(filename); os.IsNotExist(err){
+		go osdialog.ShowMessageBox(osdialog.Error, osdialog.Ok, "File not found: " + filename)
+		return
+	}
+	
 	s := core.LoadSample(filename)
 	settings.File = filename
 	context.wave = s.Wave
@@ -724,6 +731,11 @@ func loadSample(filename string) {
 }
 
 func main() {
+
+	if len(os.Args) > 1 && os.Args[1] == "--version" {
+		fmt.Println(appName, appVersion, runtime.GOOS, runtime.GOARCH)
+		os.Exit(0)
+	}
 
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -745,6 +757,10 @@ func main() {
 			if err != nil {
 				settings = defaultSettings()
 			}
+		}
+
+		if len(core.GetMidiDevices()) <= settings.Midiout {
+			settings.Midiout = core.ElektronDevice()
 		}
 
 		fmt.Println("settings:", settings)
@@ -795,7 +811,6 @@ func main() {
 	} else if len(os.Args) > 1 {
 		loadSample(os.Args[1])
 	} else {
-		fmt.Println("asdf")
 		if _, err := os.Stat(settings.File); !os.IsNotExist(err) {
 			loadSample(settings.File)
 		} else {
@@ -822,8 +837,6 @@ func main() {
 
 	{
 		io := imgui.CurrentIO()
-
-		log.Println("OK")
 
 		window.SetScrollCallback(func(w *glfw.Window, xoff float64, yoff float64) {
 			if io.WantCaptureMouse() {
